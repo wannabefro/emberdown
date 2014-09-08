@@ -16,6 +16,7 @@ App.IndexView = Ember.View.extend({
   didInsertElement: function() {
     this.editor = ace.edit("editor");
     this.editor.getSession().setMode("ace/mode/markdown");
+    $('.ace_text-input').focus();
   },
   keyUp: function() {
     this.get('controller').send('renderMarkdown', this.editor.getValue());
