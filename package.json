@@ -11,9 +11,10 @@
   "window": {
     "title": "Emberdown",
     "position": "center",
-    "toolbar": false
+    "toolbar": true
   },
   "dependencies": {
-    "marked": "latest"
+    "marked": "latest",
+    "highlight.js": "latest"
   }
 }
