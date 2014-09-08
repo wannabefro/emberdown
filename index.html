@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Ember Down</title>
+    <link rel='stylesheet' href='css/markdown.css'>
     <link rel='stylesheet' href='node_modules/highlight.js/styles/github.css'>
     <link rel='stylesheet' href='css/main.css'>
   </head>
@@ -21,6 +22,7 @@
       var marked = require('marked');
       marked.setOptions({
         gfm: true,
+        breaks: true,
         highlight: function (code) {
           return require('highlight.js').highlightAuto(code).value;
         }
