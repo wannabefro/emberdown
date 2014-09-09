@@ -11,6 +11,8 @@
   "window": {
     "title": "Emberdown",
     "position": "center",
+    "width": 1000,
+    "height": 600,
     "toolbar": true
   },
   "dependencies": {
