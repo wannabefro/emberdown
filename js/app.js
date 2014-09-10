@@ -1,5 +1,6 @@
 var gui = require('nw.gui'),
-    fs = require('fs');
+    fs = require('fs'),
+    marked = require('marked');
 App = Ember.Application.create();
 
 App.Router.map(function() {
@@ -22,7 +23,8 @@ App.ApplicationController = Ember.Controller.extend({
         fs.readFile($(this).val(), function(err, data) {
           if (err)
             alert('Sorry something went wrong');
-          that.controllerFor('index').send('updateEditor', data.toString());
+          that.controllerFor('index').set('body', data.toString());
+          that.controllerFor('index').send('updateEditor');
         });
       });
       chooser.trigger('click');
@@ -54,23 +56,28 @@ App.IndexView = Ember.View.extend({
     this.editor = ace.edit("editor");
     this.editor.getSession().setMode("ace/mode/markdown");
     $('.ace_text-input').focus();
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+      highlight: function (code) {
+        return require('highlight.js').highlightAuto(code).value;
+      }
+    });
   },
   keyUp: function() {
-    this.get('controller').send('renderMarkdown', this.editor.getValue());
+    this.get('controller').set('body', this.editor.getValue());
   }
 });
 
 App.IndexController = Ember.ObjectController.extend({
-  actions: {
-    renderMarkdown: function(value) {
-      var markdown = marked(value);
-      this.set('body', markdown);
-      $('#markdown-preview').html(markdown);
-    },
+  renderedMarkdown: function() {
+    var markdown = marked(this.get('body'));
+    return markdown;
+  }.property('body'),
 
-    updateEditor: function(value) {
-      ace.edit("editor").setValue(value);
-      this.send('renderMarkdown', value);
+  actions: {
+    updateEditor: function() {
+      ace.edit("editor").setValue(this.get('body'));
     }
   }
 });

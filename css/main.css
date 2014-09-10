@@ -12,6 +12,7 @@ body, html{
 
 #markdown-preview {
   position: absolute;
+  overflow: scroll;
   top: 0;
   right: 0;
   width: 50%;

@@ -15,6 +15,7 @@
       <div id="editor">
       </div>
       <div id="markdown-preview">
+        {{{renderedMarkdown}}}
       </div>
     </script>
     <script src='js/lib/jquery-1.10.2.js'></script>
@@ -22,15 +23,5 @@
     <script src='js/lib/ember-1.7.0.js'></script>
     <script src='js/lib/ace/ace.js'></script>
     <script src='js/app.js'></script>
-    <script type='text/javascript'>
-      var marked = require('marked');
-      marked.setOptions({
-        gfm: true,
-        breaks: true,
-        highlight: function (code) {
-          return require('highlight.js').highlightAuto(code).value;
-        }
-      });
-    </script>
   </body>
 </html>
