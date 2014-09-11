@@ -15,6 +15,8 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.ApplicationController = Ember.Controller.extend({
+  needs: ['index'],
+  index: Ember.computed.alias("controllers.index"),
   actions: {
     openFile: function() {
       var that = this;
@@ -23,11 +25,23 @@ App.ApplicationController = Ember.Controller.extend({
         fs.readFile($(this).val(), function(err, data) {
           if (err)
             alert('Sorry something went wrong');
-          that.controllerFor('index').set('body', data.toString());
-          that.controllerFor('index').send('updateEditor');
+          that.set('index.content.body', data.toString());
+          that.get('index').send('updateEditor');
         });
       });
       chooser.trigger('click');
+    },
+
+    saveFile: function() {
+      var that = this;
+      var chooser = $('#fileSave');
+      chooser.trigger('click');
+      chooser.change(function(e) {
+        fs.writeFile($(this).val(), that.get('index.content.body'), function(err){
+          if (err)
+            alert('Something went wrong. Sorry :(');
+        })
+      })
     }
   }
 });
@@ -43,6 +57,12 @@ App.ApplicationView = Ember.View.extend({
       label: 'Open',
       click: function() {
         that.get('controller').send('openFile');
+      }
+    }));
+    file.insert(new gui.MenuItem({
+      label: 'Save',
+      click: function() {
+        that.get('controller').send('saveFile');
       }
     }));
     win.menu = menubar;
