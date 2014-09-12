@@ -20,7 +20,7 @@ App.ApplicationController = Ember.Controller.extend({
   index: Ember.computed.alias("controllers.index"),
 
   actions: {
-    openFile: function() {
+    open: function() {
       var that = this;
       var chooser = $('#fileDialog');
       chooser.change(function(e) {
@@ -33,16 +33,29 @@ App.ApplicationController = Ember.Controller.extend({
       chooser.trigger('click');
     },
 
-    saveFile: function() {
-      var chooser = $('#fileSave');
+    saveAs: function() {
+      this.set('index.content.path', null);
+      this.send('save');
+    },
+
+    save: function() {
       var path;
-      if (!this.get('index.content.path')) {
+      var pathChanged = new $.Deferred();
+      var that = this;
+      var chooser = $('#fileSave');
+      chooser.change(function(e) {
+        path = $(this).val();
+        pathChanged.resolve();
+
+      });
+      if (!that.get('index.content.path')) {
         chooser.trigger('click');
-        chooser.change(function(e) {
-          path = $(this).val();
-        });
+      } else {
+        pathChanged.resolve();
       };
-      this.get('index').send('writeFile', path);
+      $.when(pathChanged).done(function() {
+        that.get('index').send('writeFile', path);
+      });
     }
 
   }
@@ -58,16 +71,23 @@ App.ApplicationView = Ember.View.extend({
     var file = new gui.Menu();
 
     file.insert(new gui.MenuItem({
-      label: 'Open',
+      label: 'Save As',
       click: function() {
-        that.get('controller').send('openFile');
+        that.get('controller').send('saveAs');
       }
     }));
 
     file.insert(new gui.MenuItem({
       label: 'Save',
       click: function() {
-        that.get('controller').send('saveFile');
+        that.get('controller').send('save');
+      }
+    }));
+
+    file.insert(new gui.MenuItem({
+      label: 'Open',
+      click: function() {
+        that.get('controller').send('open');
       }
     }));
     win.menu = menubar;
