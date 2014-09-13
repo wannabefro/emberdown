@@ -13,7 +13,7 @@
     "position": "center",
     "width": 1000,
     "height": 600,
-    "toolbar": true
+    "toolbar": false
   },
   "dependencies": {
     "marked": "latest",

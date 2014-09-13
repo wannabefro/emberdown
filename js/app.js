@@ -81,14 +81,18 @@ App.ApplicationView = Ember.View.extend({
       label: 'Save',
       click: function() {
         that.get('controller').send('save');
-      }
+      },
+      key: 's',
+      modifiers: 'cmd'
     }));
 
     file.insert(new gui.MenuItem({
       label: 'Open',
       click: function() {
         that.get('controller').send('open');
-      }
+      },
+      key: 'o',
+      modifiers: 'cmd'
     }));
     win.menu = menubar;
     win.menu.insert(new gui.MenuItem({ label: 'File', submenu: file}), 1);
