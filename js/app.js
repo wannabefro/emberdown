@@ -1,9 +1,46 @@
 var gui = require('nw.gui'),
 fs = require('fs'),
-marked = require('marked');
+marked = require('marked'),
+attr = DS.attr;
 App = Ember.Application.create();
 
+App.ApplicationSerializer = DS.LSSerializer.extend();
+
+App.ApplicationAdapter = DS.LSAdapter.extend({
+    namespace: 'emberdown'
+});
+
 App.Router.map(function() {
+  this.route('settings');
+});
+
+App.Setting = DS.Model.extend({
+  fontSize: attr('string', {defaultValue: '12'})
+});
+
+App.SettingsRoute = Ember.Route.extend({
+  model: function() {
+    var that = this;
+    return this.store.findAll('setting').then(function(response){
+      if (response.content.length === 0) {
+        var setting = that.store.createRecord('setting');
+        setting.save();
+        return setting;
+      } else {
+      return response.get('firstObject');
+      }
+    }, function(){
+      alert('sorry something went wrong :(');
+    });
+  }
+});
+
+App.ApplicationRoute = Ember.Route.extend({
+  actions: {
+    settings: function() {
+      this.transitionTo('settings');
+    }
+  }
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -69,6 +106,13 @@ App.ApplicationView = Ember.View.extend({
     menubar.createMacBuiltin('Emberdown');
 
     var file = new gui.Menu();
+
+    file.insert(new gui.MenuItem({
+      label: 'Settings',
+      click: function() {
+        that.get('controller').send('settings');
+      }
+    }));
 
     file.insert(new gui.MenuItem({
       label: 'Save As',
