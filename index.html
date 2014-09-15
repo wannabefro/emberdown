@@ -20,8 +20,14 @@
       </div>
     </script>
     <script type='text/x-handlebars' id='settings'>
-      <h1>Settings</h1>
-      {{fontSize}}
+      <form {{action 'updateSettings' on='submit'}}>
+      <h2>Settings</h2>
+      <div class='form-group'>
+      <label for='fontSize'>Editor Font Size</label>
+      {{input value=fontSize id='fontSize' class="form-control"}}
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Save</button>
+      </form>
     </script>
     <script src='js/lib/jquery-1.10.2.js'></script>
     <script src='js/lib/handlebars-1.1.2.js'></script>

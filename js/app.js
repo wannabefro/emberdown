@@ -10,28 +10,48 @@ App.ApplicationAdapter = DS.LSAdapter.extend({
     namespace: 'emberdown'
 });
 
-App.Router.map(function() {
-  this.route('settings');
-});
-
 App.Setting = DS.Model.extend({
   fontSize: attr('string', {defaultValue: '12'})
 });
 
+App.initializer({
+  name: 'settings',
+
+  initialize: function(container, application) {
+    application.deferReadiness();
+    var store = container.lookup('store:main');
+    store.findAll('setting').then(function(response){
+      if (response.content.length === 0) {
+        var settings = store.createRecord('setting');
+        setting.save();
+      } else {
+      var settings = response.get('firstObject');
+      };
+      application.register('settings:current', settings, {instantiate: false});
+      application.inject('route', 'currentSettings', 'settings:current');
+      application.inject('controller', 'currentSettings', 'settings:current');
+      application.advanceReadiness();
+    });
+  }
+});
+
+App.Router.map(function() {
+  this.route('settings');
+});
+
 App.SettingsRoute = Ember.Route.extend({
   model: function() {
-    var that = this;
-    return this.store.findAll('setting').then(function(response){
-      if (response.content.length === 0) {
-        var setting = that.store.createRecord('setting');
-        setting.save();
-        return setting;
-      } else {
-      return response.get('firstObject');
-      }
-    }, function(){
-      alert('sorry something went wrong :(');
-    });
+    return this.get('currentSettings');
+  },
+  actions: {
+    updateSettings: function() {
+      var that = this;
+      this.currentModel.save().then(function(success) {
+        that.transitionTo('index');
+      }, function(err){
+        alert('something went wrong :(');
+      });
+    }
   }
 });
 
@@ -146,7 +166,9 @@ App.ApplicationView = Ember.View.extend({
 App.IndexView = Ember.View.extend({
   editor: null,
   didInsertElement: function() {
+    var currentSettings = this.get('controller.currentSettings');
     this.editor = ace.edit("editor");
+    this.editor.setFontSize(currentSettings.get('fontSize') + 'px');
     this.controller.set('editor', this.editor);
     this.editor.getSession().setMode("ace/mode/markdown");
     $('.ace_text-input').focus();
